@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <div class="logo">
+          <h3>LoGo</h3>
+        </div>
+
+        <div class="search">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="search by name..."
+          />
+          <button id="search_btn">Search</button>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="search">
+          <h2>Add a review</h2>
+          <form>
+            <label for="name">Company Name</label>
+            <input type="text" name="name" id="name" />
+
+            <label for="pros">Company Pros</label>
+            <input type="text" name="pros" id="pros" />
+
+            <label for="cons">Company Cons</label>
+            <input type="text" name="cons" id="cons" />
+
+            <button type="submit">Add Review</button>
+          </form>
+        </div>
+
+        <div class="show"></div>
+      </div>
+    </div>
+
+    <!-- <script></script> -->
+    <script>
+      const form = document.querySelector("form");
+      const show = document.querySelector(".show");
+      const search = document.querySelector("#search");
+      const search_btn = document.querySelector("#search_btn");
+      let input;
+
+      // search.addEventListener("input", () => {
+      //   if (search.value === "") {
+      //     input = "";
+      //     getAllReviews();
+      //   }
+      // });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.querySelector("#name").value;
+        const pros = document.querySelector("#pros").value;
+        const cons = document.querySelector("#cons").value;
+
+        try {
+          const data = await fetch("http://localhost:3000/reviews", {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, pros, cons }),
+          });
+
+          const ans = await data.json();
+          console.log(ans);
+          getAllReviews();
+        } catch (error) {
+          console.log(error.error);
+        }
+      });
+
+      async function getAllReviews() {
+        show.textContent = "";
+
+        try {
+          if (input) {
+            const data = await fetch(
+              `http://localhost:3000/reviews/search?name=${input.toLowerCase()}`,
+            );
+
+            const ans = await data.json();
+            console.log(ans.data);
+
+            const row = document.createElement("div");
+              row.id = "row";
+
+              const p1 = document.createElement("p");
+              p1.textContent = ans.data.name;
+
+              const p2 = document.createElement("p");
+              p2.textContent = ans.data.pros;
+
+              const p3 = document.createElement("p");
+              p3.textContent = ans.data.cons;
+
+              row.append(p1, p2, p3);
+              show.append(row);
+
+          } else {
+            const data = await fetch("http://localhost:3000/reviews");
+
+            const ans = await data.json();
+            console.log(ans.data);
+
+            ans.data.forEach((item) => {
+              const row = document.createElement("div");
+              row.id = "row";
+
+              const p1 = document.createElement("p");
+              p1.textContent = item.name;
+
+              const p2 = document.createElement("p");
+              p2.textContent = item.pros;
+
+              const p3 = document.createElement("p");
+              p3.textContent = item.cons;
+
+              row.append(p1, p2, p3);
+              show.append(row);
+            });
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", getAllReviews);
+
+      async function getSearchedData(params) {
+        input = document.querySelector("#search").value;
+        await getAllReviews();
+      }
+
+      search_btn.addEventListener("click", getSearchedData);
+    </script>
+  </body>
+</html>
