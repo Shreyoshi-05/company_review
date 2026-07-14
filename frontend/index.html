@@ -41,7 +41,12 @@
           </form>
         </div>
 
-        <div class="show"></div>
+        <div class="show">
+          <h2>Show Rewiew</h2>
+        </div>
+        <div class="delete_content">
+          <h2>Deleted Content</h2>
+        </div>
       </div>
     </div>
 
@@ -52,13 +57,6 @@
       const search = document.querySelector("#search");
       const search_btn = document.querySelector("#search_btn");
       let input;
-
-      // search.addEventListener("input", () => {
-      //   if (search.value === "") {
-      //     input = "";
-      //     getAllReviews();
-      //   }
-      // });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -81,6 +79,8 @@
           console.log(error.error);
         }
       });
+
+      async function getAllDeletedData(id){};
 
       async function getAllReviews() {
         show.textContent = "";
@@ -106,7 +106,13 @@
               const p3 = document.createElement("p");
               p3.textContent = ans.data.cons;
 
-              row.append(p1, p2, p3);
+              const btn = document.createElement("button");
+              btn.textContent = "Delete";
+              btn.id = "delete";
+
+              btn.addEventListener("click",getAllDeletedData(ans.data.id))
+
+              row.append(p1, p2, p3,btn);
               show.append(row);
 
           } else {
@@ -128,7 +134,12 @@
               const p3 = document.createElement("p");
               p3.textContent = item.cons;
 
-              row.append(p1, p2, p3);
+              const btn = document.createElement("button");
+              btn.id = "delete";
+              btn.textContent = "Delete";
+              btn.addEventListener("click",getAllDeletedData(item.id))
+
+              row.append(p1, p2, p3 , btn);
               show.append(row);
             });
           }

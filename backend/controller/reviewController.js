@@ -1,4 +1,5 @@
 import { showStatus } from "../resSatus/status.js";
+import { deleteReview } from "../table/deleteTable.js";
 import { reviewTable } from "../table/reviewTable.js";
 import { Op } from "sequelize";
 
@@ -32,13 +33,30 @@ export const showReview = async (req, res) => {
   }
 };
 
-export const deleteReview = async (req, res) => {};
+export const alldeleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const project = await reviewTable.findByPk(id);
+    if (project === null) {
+      return showStatus(res, 404, "review is not found", false);
+    }
+    return showStatus(res, 404, "data cant be found", false, project);
+    const data = await deleteReview.create({ name, pros, cons });
+
+    await User.destroy({where: {id}});
+
+  } catch (error) {
+    return showStatus(res, 500, error.message, false);
+  }
+};
 
 export const findByName = async (req, res) => {
   try {
-    const {name} = req.query;
+    const { name } = req.query;
 
-    const project = await reviewTable.findOne({ where: { name: {[Op.like]:`%${name}%`} } });
+    const project = await reviewTable.findOne({
+      where: { name: { [Op.like]: `%${name}%` } },
+    });
     if (project === null) {
       return showStatus(res, 404, "data cant be found", false);
     } else {
